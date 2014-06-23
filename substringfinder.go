@@ -7,15 +7,15 @@ func FindFirstOfSubString(parent, substring string) (int, int) {
 }
 
 func FindFirstOfSubStringWithStartingIndex(parent, substring string, startingIndex int) (int, int) {
-	for i := startingIndex; i < len(parent) - len(substring); i++ {
+	for i := startingIndex; i < len(parent)-len(substring); i++ {
 		foundSubString := parent[i] == substring[0]
 		for counter := 1; counter < len(substring); counter++ {
 			if foundSubString == false {
 				break
 			}
-			foundSubString =  parent[i + counter] == substring[counter]
+			foundSubString = parent[i+counter] == substring[counter]
 		}
-		if foundSubString	 == true {
+		if foundSubString == true {
 			return i, i + len(substring) - 1
 		}
 	}
@@ -29,7 +29,7 @@ func FindIndicesBetweenRunes(parent string, leftRune, rightRune rune) (int, int)
 func FindIndicesBetweenRunesWithStartingIndex(parent string, leftRune, rightRune rune, startingIndex int) (int, int) {
 	substring := parent[startingIndex:len(parent)]
 	lboundIndex := strings.IndexRune(substring, leftRune)
-	substring = parent[startingIndex + lboundIndex: len(parent)]
+	substring = parent[startingIndex+lboundIndex : len(parent)]
 	rboundIndex := strings.IndexRune(substring, rightRune)
 	return lboundIndex + startingIndex, rboundIndex + lboundIndex + startingIndex
 }
