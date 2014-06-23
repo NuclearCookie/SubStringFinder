@@ -29,7 +29,8 @@ func FindIndicesBetweenRunes(parent string, leftRune, rightRune rune) (int, int)
 func FindIndicesBetweenRunesWithStartingIndex(parent string, leftRune, rightRune rune, startingIndex int) (int, int) {
 	substring := parent[startingIndex:len(parent)]
 	lboundIndex := strings.IndexRune(substring, leftRune)
-	substring = parent[startingIndex+lboundIndex : len(parent)]
+	rboundStartingPos := startingIndex + lboundIndex + 1
+	substring = parent[rboundStartingPos:len(parent)]
 	rboundIndex := strings.IndexRune(substring, rightRune)
-	return lboundIndex + startingIndex, rboundIndex + lboundIndex + startingIndex
+	return lboundIndex + startingIndex, rboundIndex + rboundStartingPos
 }
