@@ -1,6 +1,7 @@
 package substringfinder
 
 import (
+	"regexp"
 	"strings"
 
 //"math"
@@ -119,7 +120,7 @@ func FindIndicesBetweenMatchingRunesWithStartingIndex(parent string, leftRune, r
 			counter++
 		}
 		if foundLeftRune && counter == 0 {
-			rbounds = i - 1
+			rbounds = i
 			break
 		}
 	}
@@ -142,4 +143,26 @@ func FindIndicesBetweenRunesContainingWithStartingIndex(parent string, leftRune,
 		}
 	}
 	return -1, -1
+}
+
+func GetLastWord(text string) string {
+	var start, end int
+	var validCharFound bool
+	// remove all non word characters
+	re := regexp.MustCompile("[^A-Za-z0-9\n ]+")
+	text = re.ReplaceAllString(text, " ")
+	for i := len(text) - 1; i >= 0; i-- {
+		if validCharFound == false {
+			if text[i] != '\n' && text[i] != ' ' {
+				validCharFound = true
+				end = i
+			}
+		} else {
+			if text[i] == '\n' || text[i] == ' ' {
+				start = i + 1
+				break
+			}
+		}
+	}
+	return text[start : end+1]
 }
