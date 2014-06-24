@@ -3,6 +3,8 @@ package substringfinder
 import (
 	"regexp"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 //"math"
 //"fmt"
@@ -165,4 +167,24 @@ func GetLastWord(text string) string {
 		}
 	}
 	return text[start : end+1]
+}
+
+func IsWholeWord(text string, start, end int) bool {
+	leftSideIsLetter, rightSideIsLetter := false, false
+
+	if start > 0 && end < len(text)-2 {
+		rune, _ := utf8.DecodeRuneInString(text[start-1:])
+		leftSideIsLetter = unicode.IsLetter(rune)
+		rune, _ = utf8.DecodeRuneInString(text[end+1:])
+		rightSideIsLetter = unicode.IsLetter(rune)
+	} else if start > 0 {
+		rune, _ := utf8.DecodeRuneInString(text[start-1:])
+		leftSideIsLetter = unicode.IsLetter(rune)
+		rightSideIsLetter = false
+	} else if end < len(text)-2 {
+		rune, _ := utf8.DecodeRuneInString(text[end+1:])
+		rightSideIsLetter = unicode.IsLetter(rune)
+		leftSideIsLetter = false
+	}
+	return !leftSideIsLetter && !rightSideIsLetter
 }
