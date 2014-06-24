@@ -41,7 +41,9 @@ func FindIndicesBetweenRunesWithStartingIndex(parent string, leftRune, rightRune
 		rboundStartingPos := startingIndex + lboundIndex + 1
 		substring = parent[rboundStartingPos:]
 		rboundIndex := strings.IndexRune(substring, rightRune)
-		return lboundIndex + startingIndex, rboundIndex + rboundStartingPos
+		if rboundIndex > -1 {
+			return lboundIndex + startingIndex, rboundIndex + rboundStartingPos
+		}
 	}
 	return -1, -1
 }
