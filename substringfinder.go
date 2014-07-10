@@ -10,13 +10,65 @@ import (
 //"fmt"
 )
 
-func FindFirstOfSubString(parent, substring string) (int, int) {
-	return FindFirstOfSubStringWithStartingIndex(parent, substring, 0)
+func FindFirstOfSubString(parent, substring string, ignoreQuotsAndComments bool) (int, int) {
+	return FindFirstOfSubStringWithStartingIndex(parent, substring, 0, ignoreQuotsAndComments)
 }
 
-func FindFirstOfSubStringWithStartingIndex(parent, substring string, startingIndex int) (int, int) {
+func FindFirstOfSubStringWithStartingIndex(parent, substring string, startingIndex int, ignoreQuotsAndComments bool) (int, int) {
+	isValidCode := true
+	var invalidationType string
 	// i < len + len causes range [startingIndex: len - 1] to be evaluated.. be sure to add 1 again
 	for i := startingIndex; i < len(parent)-len(substring)+1; i++ {
+		//validate code block
+		if ignoreQuotsAndComments == true {
+			if isValidCode {
+				if parent[i] == '/' && i < len(parent)-1 {
+					if parent[i+1] == '/' {
+						invalidationType = "//"
+						isValidCode = false
+						//println("single line comment found, ignoring next runes")
+						continue
+					} else if parent[i+1] == '*' {
+						invalidationType = "/*"
+						isValidCode = false
+						//println("multi line comment found, ignoring next runes")
+						continue
+					}
+				} else if parent[i] == '"' && i < len(parent)-1 {
+					invalidationType = "\""
+					isValidCode = false
+					//println("string text found, ignoring next runes")
+					continue
+				}
+			} else {
+				if invalidationType == "//" && parent[i] == '\n' {
+					isValidCode = true
+					invalidationType = ""
+					//println("single line comment ended, processing next runes")
+					continue
+				} else if invalidationType == "/*" && parent[i] == '/' {
+					if parent[i-1] == '*' {
+						isValidCode = true
+						invalidationType = ""
+						//println("multi line comment ended, processing next runes")
+						continue
+					}
+				} else if invalidationType == "\"" && parent[i] == '"' {
+					if parent[i-1] != '\\' {
+						isValidCode = true
+						invalidationType = ""
+						//println("string text ended, processing next runes")
+						continue
+					}
+				}
+			}
+		}
+
+		//don't process any invalid code if ignore bool has been set
+		if isValidCode == false && ignoreQuotsAndComments == true {
+			continue
+		}
+
 		foundSubString := parent[i] == substring[0]
 		if foundSubString == true {
 			for counter := 1; counter < len(substring); counter++ {
@@ -64,44 +116,46 @@ func FindIndicesBetweenMatchingRunesWithStartingIndex(parent string, leftRune, r
 	var invalidationType string
 	for i, r := range substring {
 		//validate code block
-		if isValidCode {
-			if r == '/' && i < len(substring)-1 {
-				if substring[i+1] == '/' {
-					invalidationType = "//"
+		if ignoreQuotsAndComments == true {
+			if isValidCode {
+				if r == '/' && i < len(substring)-1 {
+					if substring[i+1] == '/' {
+						invalidationType = "//"
+						isValidCode = false
+						//println("single line comment found, ignoring next runes")
+						continue
+					} else if substring[i+1] == '*' {
+						invalidationType = "/*"
+						isValidCode = false
+						//println("multi line comment found, ignoring next runes")
+						continue
+					}
+				} else if r == '"' && i < len(substring)-1 {
+					invalidationType = "\""
 					isValidCode = false
-					//println("single line comment found, ignoring next runes")
-					continue
-				} else if substring[i+1] == '*' {
-					invalidationType = "/*"
-					isValidCode = false
-					//println("multi line comment found, ignoring next runes")
+					//println("string text found, ignoring next runes")
 					continue
 				}
-			} else if r == '"' && i < len(substring)-1 {
-				invalidationType = "\""
-				isValidCode = false
-				//println("string text found, ignoring next runes")
-				continue
-			}
-		} else {
-			if invalidationType == "//" && r == '\n' {
-				isValidCode = true
-				invalidationType = ""
-				//println("single line comment ended, processing next runes")
-				continue
-			} else if invalidationType == "/*" && r == '/' {
-				if substring[i-1] == '*' {
+			} else {
+				if invalidationType == "//" && r == '\n' {
 					isValidCode = true
 					invalidationType = ""
-					//println("multi line comment ended, processing next runes")
+					//println("single line comment ended, processing next runes")
 					continue
-				}
-			} else if invalidationType == "\"" && r == '"' {
-				if substring[i-1] != '\\' {
-					isValidCode = true
-					invalidationType = ""
-					//println("string text ended, processing next runes")
-					continue
+				} else if invalidationType == "/*" && r == '/' {
+					if substring[i-1] == '*' {
+						isValidCode = true
+						invalidationType = ""
+						//println("multi line comment ended, processing next runes")
+						continue
+					}
+				} else if invalidationType == "\"" && r == '"' {
+					if substring[i-1] != '\\' {
+						isValidCode = true
+						invalidationType = ""
+						//println("string text ended, processing next runes")
+						continue
+					}
 				}
 			}
 		}
@@ -138,7 +192,7 @@ func FindIndicesBetweenRunesContainingWithStartingIndex(parent string, leftRune,
 	for start != -1 && end != -1 {
 		start, end = FindIndicesBetweenRunesWithStartingIndex(parent, leftRune, rightRune, end+1)
 		if start != -1 && end != -1 {
-			subStart, _ := FindFirstOfSubString(parent[start:end+1], substring)
+			subStart, _ := FindFirstOfSubString(parent[start:end+1], substring, false)
 			if subStart != -1 {
 				return start, end
 			}
