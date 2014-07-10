@@ -201,6 +201,24 @@ func FindIndicesBetweenRunesContainingWithStartingIndex(parent string, leftRune,
 	return -1, -1
 }
 
+func FindIndicesOfSurroundingRunesOfSubString(parent string, start, end int, leftRune, rightRune byte) (int, int) {
+	left, right := -1, -1
+	for i := start; i > 0; i-- {
+		if parent[i] == leftRune {
+			left = i
+			break
+		}
+	}
+
+	for i := end; i < len(parent); i++ {
+		if parent[i] == rightRune {
+			right = i
+			break
+		}
+	}
+	return left, right
+}
+
 func GetLastWord(text string) string {
 	var start, end int
 	var validCharFound bool
