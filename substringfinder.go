@@ -6,8 +6,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-//"math"
-//"fmt"
+	//"math"
+	//"fmt"
 )
 
 func FindFirstOfSubString(parent, substring string, ignoreQuotsAndComments bool) (int, int) {
