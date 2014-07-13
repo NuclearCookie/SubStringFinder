@@ -1,13 +1,10 @@
-package substringfinder
+package stringparsehelper
 
 import (
 	"regexp"
 	"strings"
 	"unicode"
 	"unicode/utf8"
-
-	//"math"
-	//"fmt"
 )
 
 func FindFirstOfSubString(parent, substring string, ignoreQuotsAndComments bool) (int, int) {
